@@ -37,6 +37,7 @@ const (
 	PRODUCTS_EMPLOYMENT             Products = "employment"
 	PRODUCTS_RECURRING_TRANSACTIONS Products = "recurring_transactions"
 	PRODUCTS_SIGNAL                 Products = "signal"
+	PRODUCTS_IDENTITIY_MATCH        Products = "identity_match"
 )
 
 var allowedProductsEnumValues = []Products{
@@ -57,6 +58,7 @@ var allowedProductsEnumValues = []Products{
 	"employment",
 	"recurring_transactions",
 	"signal",
+	"identity_match",
 }
 
 func (v *Products) UnmarshalJSON(src []byte) error {
