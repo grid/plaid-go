@@ -778,6 +778,9 @@ func (o LinkTokenCreateRequest) MarshalJSON() ([]byte, error) {
 	if o.Update != nil {
 		toSerialize["update"] = o.Update
 	}
+	if o.Transactions != nil {
+		toSerialize["transactions"] = o.Transactions
+	}
 	return json.Marshal(toSerialize)
 }
 
