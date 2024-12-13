@@ -26,6 +26,8 @@ type TransactionsGetRequestOptions struct {
 	IncludeOriginalDescription NullableBool `json:"include_original_description,omitempty"`
 	// Include the `personal_finance_category` object in the response. This feature is currently in beta – to request access, contact transactions-feedback@plaid.com.
 	IncludePersonalFinanceCategoryBeta *bool `json:"include_personal_finance_category_beta,omitempty"`
+	// This field only applies to calls for Items where the Transactions product has not already been initialized (i.e. by specifying `transactions` in the `products`, `optional_products`, or `required_if_consented_products` array when calling `/link/token/create` or by making a previous call to `/transactions/sync` or `/transactions/get`). In those cases, the field controls the maximum number of days of transaction history that Plaid will request from the financial institution. The more transaction history is requested, the longer the historical update poll will take. If no value is specified, 90 days of history will be requested by default. If a value under 30 is provided, a minimum of 30 days of history will be requested.  If you are initializing your Items with transactions during the `/link/token/create` call (e.g. by including `transactions` in the `/link/token/create` `products` array), you must use the [`transactions.days_requested`](https://plaid.com/docs/api/link/#link-token-create-request-transactions-days-requested) field in the `/link/token/create` request instead of in the `/transactions/get` request.  If the Item has already been initialized with the Transactions product, this field will have no effect. The maximum amount of transaction history to request on an Item cannot be updated if Transactions has already been added to the Item. To request older transaction history on an Item where Transactions has already been added, you must delete the Item via `/item/remove` and send the user through Link to create a new Item.   Customers using [Recurring Transactions](https://plaid.com/docs/api/products/transactions/#transactionsrecurringget) should request at least 180 days of history for optimal results.
+	DaysRequested *int32 `json:"days_requested,omitempty"`
 }
 
 // NewTransactionsGetRequestOptions instantiates a new TransactionsGetRequestOptions object
@@ -42,6 +44,8 @@ func NewTransactionsGetRequestOptions() *TransactionsGetRequestOptions {
 	this.IncludeOriginalDescription = *NewNullableBool(&includeOriginalDescription)
 	var includePersonalFinanceCategoryBeta bool = false
 	this.IncludePersonalFinanceCategoryBeta = &includePersonalFinanceCategoryBeta
+	var daysRequested int32 = 90
+	this.DaysRequested = &daysRequested
 	return &this
 }
 
@@ -58,6 +62,8 @@ func NewTransactionsGetRequestOptionsWithDefaults() *TransactionsGetRequestOptio
 	this.IncludeOriginalDescription = *NewNullableBool(&includeOriginalDescription)
 	var includePersonalFinanceCategoryBeta bool = false
 	this.IncludePersonalFinanceCategoryBeta = &includePersonalFinanceCategoryBeta
+	var daysRequested int32 = 90
+	this.DaysRequested = &daysRequested
 	return &this
 }
 
@@ -170,7 +176,7 @@ func (o *TransactionsGetRequestOptions) GetIncludeOriginalDescription() bool {
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *TransactionsGetRequestOptions) GetIncludeOriginalDescriptionOk() (*bool, bool) {
-	if o == nil  {
+	if o == nil {
 		return nil, false
 	}
 	return o.IncludeOriginalDescription.Get(), o.IncludeOriginalDescription.IsSet()
@@ -189,6 +195,7 @@ func (o *TransactionsGetRequestOptions) HasIncludeOriginalDescription() bool {
 func (o *TransactionsGetRequestOptions) SetIncludeOriginalDescription(v bool) {
 	o.IncludeOriginalDescription.Set(&v)
 }
+
 // SetIncludeOriginalDescriptionNil sets the value for IncludeOriginalDescription to be an explicit nil
 func (o *TransactionsGetRequestOptions) SetIncludeOriginalDescriptionNil() {
 	o.IncludeOriginalDescription.Set(nil)
@@ -226,9 +233,36 @@ func (o *TransactionsGetRequestOptions) HasIncludePersonalFinanceCategoryBeta() 
 	return false
 }
 
-// SetIncludePersonalFinanceCategoryBeta gets a reference to the given bool and assigns it to the IncludePersonalFinanceCategoryBeta field.
-func (o *TransactionsGetRequestOptions) SetIncludePersonalFinanceCategoryBeta(v bool) {
-	o.IncludePersonalFinanceCategoryBeta = &v
+// GetDaysRequested returns the DaysRequested field value if set, zero value otherwise.
+func (o *TransactionsGetRequestOptions) GetDaysRequested() int32 {
+	if o == nil || o.DaysRequested == nil {
+		var ret int32
+		return ret
+	}
+	return *o.DaysRequested
+}
+
+// GetDaysRequestedOk returns a tuple with the DaysRequested field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *TransactionsGetRequestOptions) GetDaysRequestedOk() (*int32, bool) {
+	if o == nil || o.DaysRequested == nil {
+		return nil, false
+	}
+	return o.DaysRequested, true
+}
+
+// HasDaysRequested returns a boolean if a field has been set.
+func (o *TransactionsGetRequestOptions) HasDaysRequested() bool {
+	if o != nil && o.DaysRequested != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetDaysRequested gets a reference to the given int32 and assigns it to the DaysRequested field.
+func (o *TransactionsGetRequestOptions) SetDaysRequested(v int32) {
+	o.DaysRequested = &v
 }
 
 func (o TransactionsGetRequestOptions) MarshalJSON() ([]byte, error) {
@@ -247,6 +281,9 @@ func (o TransactionsGetRequestOptions) MarshalJSON() ([]byte, error) {
 	}
 	if o.IncludePersonalFinanceCategoryBeta != nil {
 		toSerialize["include_personal_finance_category_beta"] = o.IncludePersonalFinanceCategoryBeta
+	}
+	if o.DaysRequested != nil {
+		toSerialize["days_requested"] = o.DaysRequested
 	}
 	return json.Marshal(toSerialize)
 }
@@ -286,5 +323,3 @@ func (v *NullableTransactionsGetRequestOptions) UnmarshalJSON(src []byte) error 
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-
